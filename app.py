@@ -1,4 +1,13 @@
 from flask import Flask, render_template
+import sqlite3
+
+def init_db():
+    conn = sqlite3.connect('trainer_app.db') 
+    with open('schema.sql') as f:
+        s = f.read()
+    conn.executescript(s)
+    conn.close()
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -22,4 +31,5 @@ def client_dashboard():
     return render_template("client_dash.html")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    init_db()
+    app.run(threaded=True,debug=True)
