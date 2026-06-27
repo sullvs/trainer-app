@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
+from datetime import date
 import sqlite3
 
 def init_db():
@@ -18,9 +19,24 @@ def home():
 def login():
     return render_template("login.html")
 
-@app.route('/register')
+@app.route('/register', methods=['GET','POST'])
 def register():
-    return render_template("register.html")
+    if request.method=='POST':
+        firstname= request.form['first_name']
+        lastname= request.form['last_name']
+        password=request.form['password']
+        email=request.form['email']
+        height=request.form['height']
+        birthdate=request.form['birthdate']
+
+        conn=sqlite3.connect('trainer_app.db')
+        conn.execute("INSERT INTO users (first_name, last_name, password, email, height, birthdate, role, registration_date) VALUES (?,?,?,?,?,?,?,?)" ,(firstname, lastname, password, email, height, birthdate, 'Client', date.today()))
+        conn.commit()
+        conn.close()
+        return redirect('/login')
+    elif request.method=='GET':
+        return render_template("register.html")
+
 
 @app.route('/trainer/dashboard')
 def trainer_dashboard():
@@ -32,4 +48,4 @@ def client_dashboard():
 
 if __name__ == '__main__':
     init_db()
-    app.run(threaded=True,debug=True)
+    app.run(threaded=True, debug=True)
