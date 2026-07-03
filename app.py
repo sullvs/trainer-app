@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session
 from datetime import date
 import sqlite3
 
@@ -10,14 +10,32 @@ def init_db():
     conn.close()
 
 app = Flask(__name__)
+app.secret_key = 'dev-key-change-later'
 
 @app.route('/')
 def home():
     return render_template("home.html")
 
-@app.route('/login')
+@app.route('/login', methods=['GET','POST'])
 def login():
-    return render_template("login.html")
+    if request.method=='POST':
+        eemail=request.form['email']
+        ppassword=request.form['password']
+
+        conn=sqlite3.connect('trainer_app.db')
+        check=conn.execute("SELECT password, user_id from users WHERE email = ?", (eemail,)).fetchone()
+        if check is None:
+            print("User not found")
+        else:
+            if ppassword == check[0]:
+                session['user_id']=check[1]
+                return redirect('/client/dashboard')
+            else:
+                print("Password incorrect")
+        conn.close() 
+
+    elif request.method=='GET':
+        return render_template("login.html")
 
 @app.route('/register', methods=['GET','POST'])
 def register():
