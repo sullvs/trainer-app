@@ -58,11 +58,15 @@ def register():
 
 @app.route('/trainer/dashboard')
 def trainer_dashboard():
-    return render_template("trainer_dash.html")
+    if 'user_id' in session: 
+        return render_template("trainer_dash.html") 
+    else: return redirect("/login")
 
 @app.route('/client/dashboard')
 def client_dashboard():
-    return render_template("client_dash.html")
+    if 'user_id' in session: 
+        return render_template("client_dash.html") 
+    else: return redirect("/login")
 
 if __name__ == '__main__':
     init_db()
