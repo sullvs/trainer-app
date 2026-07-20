@@ -18,24 +18,25 @@ def home():
 
 @app.route('/login', methods=['GET','POST'])
 def login():
-    if request.method=='POST':
-        eemail=request.form['email']
-        ppassword=request.form['password']
-
-        conn=sqlite3.connect('trainer_app.db')
-        check=conn.execute("SELECT password, user_id from users WHERE email = ?", (eemail,)).fetchone()
-        if check is None:
-            print("User not found")
-        else:
-            if ppassword == check[0]:
-                session['user_id']=check[1]
-                return redirect('/client/dashboard')
-            else:
-                print("Password incorrect")
-        conn.close() 
-
-    elif request.method=='GET':
+    if request.method=='GET':
         return render_template("login.html")
+    
+    eemail=request.form['email']
+    ppassword=request.form['password']
+
+    conn=sqlite3.connect('trainer_app.db')
+    check=conn.execute("SELECT password, user_id, role from users WHERE email = ?", (eemail,)).fetchone()
+    conn.close()
+    if check is None or ppassword!=check[0]:
+        return render_template("login.html", error="Wrong Email or Password")
+            
+    session['user_id']=check[1]
+    session['role']=check[2]
+
+    if session['role']=='Client':
+            return redirect('/client/dashboard')
+    else:
+            return redirect('/trainer/dashboard')
 
 @app.route('/register', methods=['GET','POST'])
 def register():
@@ -58,15 +59,23 @@ def register():
 
 @app.route('/trainer/dashboard')
 def trainer_dashboard():
-    if 'user_id' in session: 
+    if 'user_id' not in session:
+        return redirect("/login")
+    
+    if session['role']=='Trainer': 
         return render_template("trainer_dash.html") 
-    else: return redirect("/login")
+
+    return redirect('/client/dashboard')
 
 @app.route('/client/dashboard')
 def client_dashboard():
-    if 'user_id' in session: 
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    if session['role']=='Client':
         return render_template("client_dash.html") 
-    else: return redirect("/login")
+
+    return redirect("/trainer/dashboard")
 
 if __name__ == '__main__':
     init_db()

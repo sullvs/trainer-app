@@ -5,6 +5,9 @@
 </head>
 <body>
     <h1>Login Page</h1>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
     <form action="/login" method="post">
         <label>Email</label>
         <input type="email" name="email">
