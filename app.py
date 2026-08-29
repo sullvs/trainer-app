@@ -77,6 +77,11 @@ def client_dashboard():
 
     return redirect("/trainer/dashboard")
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/login')
+
 if __name__ == '__main__':
     init_db()
     app.run(threaded=True, debug=True)
