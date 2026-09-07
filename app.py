@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, abort
+from functools import wraps
 from datetime import date
 import sqlite3
 
@@ -15,6 +16,26 @@ app.secret_key = 'dev-key-change-later'
 @app.route('/')
 def home():
     return render_template("home.html")
+
+def login_required(f):
+    @wraps(f)
+    def wrapper():
+        if 'user_id' not in session:
+            return redirect('/login')
+        else: return f()
+    return wrapper
+
+def role_required(role):
+    def decorator(f):
+        @wraps(f)
+        def wrapper():
+            if session.get('role') == role:
+                return f()
+            else:
+                abort(403)
+        return wrapper
+    return decorator
+
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -58,24 +79,17 @@ def register():
 
 
 @app.route('/trainer/dashboard')
+@login_required
+@role_required('Trainer')
 def trainer_dashboard():
-    if 'user_id' not in session:
-        return redirect("/login")
-    
-    if session['role']=='Trainer': 
-        return render_template("trainer_dash.html") 
-
-    return redirect('/client/dashboard')
+    return render_template("trainer_dash.html")
 
 @app.route('/client/dashboard')
+@login_required
+@role_required('Client')
 def client_dashboard():
-    if 'user_id' not in session:
-        return redirect('/login')
-
-    if session['role']=='Client':
         return render_template("client_dash.html") 
 
-    return redirect("/trainer/dashboard")
 
 @app.route('/logout')
 def logout():
