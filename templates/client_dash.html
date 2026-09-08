@@ -5,6 +5,19 @@
 </head>
 <body>
     <h1>Client Dash Page</h1>
+    <form method="post">
+        <label>Meal Type</label>
+        <input type= "text" name="meal_type">
+        <label>Meal contents</label>
+        <input type= "text" name="meal_content">
+        <button type="submit">Submit</button>
+    </form>
+    <h2>Your meals</h2>
+    <ul>
+    {% for meal in meals %}
+        <li>{{ meal[0] }} — {{ meal[1] }} ({{ meal[2] }})</li>
+    {% endfor %}
+    </ul>
     <a href='/logout'>Logout</a>
 </body>
 </html>

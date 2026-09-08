@@ -84,12 +84,24 @@ def register():
 def trainer_dashboard():
     return render_template("trainer_dash.html")
 
-@app.route('/client/dashboard')
+@app.route('/client/dashboard', methods=['POST','GET'])
 @login_required
 @role_required('Client')
 def client_dashboard():
-        return render_template("client_dash.html") 
-
+        if request.method=='POST':
+            mmeal_type = request.form['meal_type']
+            mmeal_content = request.form['meal_content']
+            conn=sqlite3.connect('trainer_app.db')
+            conn.execute("INSERT INTO food_log (user_id, meal_type, meal_content, log_time) VALUES (?,?,?,?)" , (session['user_id'], mmeal_type, mmeal_content, date.today()))
+            conn.commit()
+            conn.close()
+            return redirect('/client/dashboard')
+        elif request.method=='GET':
+            conn=sqlite3.connect('trainer_app.db')
+            rows=conn.execute('SELECT meal_type, meal_content, log_time FROM food_log  WHERE user_id = ?', (session['user_id'],)).fetchall()
+            conn.commit()
+            conn.close()
+            return render_template("client_dash.html", meals=rows) 
 
 @app.route('/logout')
 def logout():
