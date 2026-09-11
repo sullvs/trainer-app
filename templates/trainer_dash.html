@@ -5,6 +5,12 @@
 </head>
 <body>
     <h1>Trainer Dash Page</h1>
+    <h2>List of Clients</h2>
+    <ul>
+        {% for cli in all_cli%}
+        <li><a href="/trainer/client/{{ cli[2] }}">{{ cli[0]}} {{ cli[1]}}</a></li>
+        {% endfor %}
+    </ul>
     <a href='/logout'>Logout</a>
 </body>
 </html>

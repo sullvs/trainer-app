@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Client Data</title>
+</head>
+<body>
+<h1>Client Data</h1>
+
+<h2>Profile</h2>
+<p>Height: {{ one_cli_users[0] }}</p>
+<p>Target weight: {{ one_cli_users[1] }}</p>
+
+<h2>Food Log</h2>
+<ul>
+    {% for meal in one_cli_food %}
+    <li>{{ meal[0] }} — {{ meal[1] }} ({{ meal[2] }})</li>
+    {% endfor %}
+</ul>
+
+<h2>Weight Log</h2>
+<ul>
+    {% for w in one_cli_weight %}
+    <li>{{ w[0] }} on {{ w[1] }}</li>
+    {% endfor %}
+</ul>
+
+<a href="/trainer/dashboard">Back to all clients</a>
+</body>
+</html>

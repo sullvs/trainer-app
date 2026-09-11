@@ -9,7 +9,8 @@ CREATE TABLE if not exists users (
     birthdate text, 
     registration_date text not null, 
     membership_duration text, 
-    membership_start_date text);
+    membership_start_date text,
+    target_weight real);
 
 CREATE TABLE if not exists food_log (
     food_log_id integer primary key autoincrement, 
@@ -22,7 +23,6 @@ CREATE TABLE if not exists weight_log (
     weight_log_id integer primary key autoincrement, 
     user_id integer references users(user_id), 
     current_weight real not null, 
-    target_weight real, 
     log_time text not null);
 
 CREATE TABLE if not exists workout (

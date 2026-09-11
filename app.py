@@ -19,18 +19,18 @@ def home():
 
 def login_required(f):
     @wraps(f)
-    def wrapper():
+    def wrapper(*args, **kwargs):
         if 'user_id' not in session:
             return redirect('/login')
-        else: return f()
+        else: return f(*args, **kwargs)
     return wrapper
 
 def role_required(role):
     def decorator(f):
         @wraps(f)
-        def wrapper():
+        def wrapper(*args, **kwargs):
             if session.get('role') == role:
-                return f()
+                return f(*args, **kwargs)
             else:
                 abort(403)
         return wrapper
@@ -68,9 +68,10 @@ def register():
         email=request.form['email']
         height=request.form['height']
         birthdate=request.form['birthdate']
+        target_weight=request.form['target_weight']
 
         conn=sqlite3.connect('trainer_app.db')
-        conn.execute("INSERT INTO users (first_name, last_name, password, email, height, birthdate, role, registration_date) VALUES (?,?,?,?,?,?,?,?)" ,(firstname, lastname, password, email, height, birthdate, 'Client', date.today()))
+        conn.execute("INSERT INTO users (first_name, last_name, password, email, height, birthdate, target_weight, role, registration_date) VALUES (?,?,?,?,?,?,?,?,?)" ,(firstname, lastname, password, email, height, birthdate, target_weight, 'Client', date.today()))
         conn.commit()
         conn.close()
         return redirect('/login')
@@ -82,13 +83,27 @@ def register():
 @login_required
 @role_required('Trainer')
 def trainer_dashboard():
-    return render_template("trainer_dash.html")
+    conn=sqlite3.connect('trainer_app.db')
+    tri_rows=conn.execute("SELECT first_name, last_name, user_id FROM users WHERE role='Client'").fetchall()
+    conn.close()
+    return render_template("trainer_dash.html", all_cli=tri_rows)
+
+@app.route('/trainer/client/<client_id>')
+@login_required
+@role_required('Trainer')
+def trainer_view_client(client_id):
+    conn=sqlite3.connect("trainer_app.db")
+    per_rows_users=conn.execute("SELECT height, target_weight FROM users WHERE user_id= ?", (client_id,)).fetchone()
+    per_rows_food=conn.execute("SELECT meal_type, meal_content, log_time FROM food_log WHERE user_id = ?", (client_id,)).fetchall()
+    per_rows_weight=conn.execute("SELECT current_weight, log_time FROM weight_log WHERE user_id= ?", (client_id,)).fetchall()
+    conn.close()
+    return render_template("one_client.html",one_cli_users=per_rows_users, one_cli_food=per_rows_food, one_cli_weight=per_rows_weight)
 
 @app.route('/client/dashboard', methods=['POST','GET'])
 @login_required
 @role_required('Client')
 def client_dashboard():
-        if request.method=='POST':
+        if (request.method=='POST' and request.form['form_type']=="meals"):
             mmeal_type = request.form['meal_type']
             mmeal_content = request.form['meal_content']
             conn=sqlite3.connect('trainer_app.db')
@@ -96,12 +111,19 @@ def client_dashboard():
             conn.commit()
             conn.close()
             return redirect('/client/dashboard')
-        elif request.method=='GET':
+        elif (request.method=="POST" and request.form['form_type']=="weight"):
+            cur_weight=request.form['current_weight']
             conn=sqlite3.connect('trainer_app.db')
-            rows=conn.execute('SELECT meal_type, meal_content, log_time FROM food_log  WHERE user_id = ?', (session['user_id'],)).fetchall()
+            conn.execute("INSERT INTO weight_log (user_id, current_weight, log_time) VALUES (?,?,?)" , (session['user_id'], cur_weight, date.today()))
             conn.commit()
             conn.close()
-            return render_template("client_dash.html", meals=rows) 
+            return redirect('/client/dashboard')
+        elif request.method=='GET':
+            conn=sqlite3.connect('trainer_app.db')
+            m_rows=conn.execute('SELECT meal_type, meal_content, log_time FROM food_log  WHERE user_id = ?', (session['user_id'],)).fetchall()
+            w_rows=conn.execute('SELECT current_weight, log_time FROM weight_log WHERE user_id = ?', (session['user_id'],)).fetchall()
+            conn.close()
+            return render_template("client_dash.html", meals=m_rows, weights=w_rows) 
 
 @app.route('/logout')
 def logout():
