@@ -144,8 +144,10 @@ def client_dashboard():
             conn=sqlite3.connect('trainer_app.db')
             m_rows=conn.execute('SELECT meal_type, meal_content, log_time FROM food_log  WHERE user_id = ?', (session['user_id'],)).fetchall()
             w_rows=conn.execute('SELECT current_weight, log_time FROM weight_log WHERE user_id = ?', (session['user_id'],)).fetchall()
+            wr_rows=conn.execute('SELECT num_of_days, log_time FROM workout WHERE user_id = ?', (session['user_id'],)).fetchall()
+
             conn.close()
-            return render_template("client_dash.html", meals=m_rows, weights=w_rows) 
+            return render_template("client_dash.html", meals=m_rows, weights=w_rows, workout=wr_rows) 
 
 @app.route('/logout')
 def logout():

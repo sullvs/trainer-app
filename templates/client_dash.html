@@ -31,6 +31,12 @@
         <li>{{ weight[0] }} - {{ weight[1] }}</li>
         {% endfor %}
     </ul>
+    <ul>
+        <h2>Your Workout</h2>
+        {% for workout in workout %}
+            <li>{{ workout[0] }} - {{ workout[1] }}</li>
+        {% endfor %}
+    </ul>
     <a href='/logout'>Logout</a>
 </body>
 </html>
