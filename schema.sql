@@ -16,6 +16,7 @@ CREATE TABLE if not exists food_log (
     food_log_id SERIAL primary key , 
     user_id integer references users(user_id), 
     meal_type text, 
+    quantity numeric,
     meal_content text, 
     log_time text);
 

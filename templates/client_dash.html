@@ -1,42 +1,74 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Client Dashboard</title>
 </head>
 <body>
     <h1>Client Dash Page</h1>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
     <form method="post">
         <input type="hidden" name="form_type" value="meals">
         <label>Meal Type</label>
-        <input type= "text" name="meal_type">
+        <select name="meal_type">
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="dinner">Dinner</option>
+            <option value="snack">Snack</option>
+            <option value="drink">Drink</option>
+        </select>
+        <label>Quantity</label>
+        <input type="number" name="meal_quantity" required>
         <label>Meal contents</label>
-        <input type= "text" name="meal_content">
+        <input type= "text" name="meal_content" required>
         <button type="submit">Submit</button>
     </form>
     <form method="post">
         <input type="hidden" name="form_type" value="weight">
         <label>Weight Log</label>
-        <input type="text" name="current_weight">
+        <input type="number" name="current_weight">
         <button type="submit">Submit</button>
     </form>
     <h2>Your meals</h2>
-    <ul>
-    {% for meal in meals %}
-        <li>{{ meal[0] }} — {{ meal[1] }} ({{ meal[2] }})</li>
-    {% endfor %}
-    </ul>
-    <h2>Your Weight</h2>
-    <ul>
-    {% for weight in weights%}
-        <li>{{ weight[0] }} - {{ weight[1] }}</li>
-    {% endfor %}
-    </ul>
-    <ul>
-    <h2>Your Workout</h2>
-    {% for workout in workout %}
-        <li>{{ workout[0] }} - {{ workout[1] }}</li>
-    {% endfor %}
-    </ul>
-    <a href='/logout'>Logout</a>
+<table>
+  <tr>
+    <th>Meal</th>
+    <th>Quantity</th>
+    <th>Food</th>
+    <th>Date</th>
+  </tr>
+  {% for meal in meals %}
+  <tr>
+    <td>{{ meal[0] }}</td>
+    <td>{{ meal[1] }}</td>
+    <td>{{ meal[2] }}</td>
+    <td>{{ meal[3] }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<h2>Your weight log</h2>
+<table>
+  <tr><th>Weight</th><th>Date</th></tr>
+  {% for w in weights %}
+  <tr>
+    <td>{{ w[0] }}</td>
+    <td>{{ w[1] }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h2>Your workout</h2>
+<table>
+  <tr><th>Days per week</th><th>Date</th></tr>
+  {% for wo in workout %}
+  <tr>
+    <td>{{ wo[0] }}</td>
+    <td>{{ wo[1] }}</td>
+  </tr>
+  {% endfor %}
+</table>
+    <a href='/logout' class="btn-logout">Logout</a>
 </body>
 </html>

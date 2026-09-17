@@ -1,31 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Client Data</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Client Data</title>
 </head>
 <body>
-<h1>Client Data</h1>
+  <h1>Client Data</h1>
 
-<h2>Profile</h2>
-<p>Height: {{ one_cli_users[0] }}</p>
-<p>Target weight: {{ one_cli_users[1] }}</p>
+  <h2>Profile</h2>
+  <p>Height: {{ one_cli_users[0] }}</p>
+  <p>Target weight: {{ one_cli_users[1] }}</p>
 
-<h2>Food Log</h2>
-<ul>
+  <h2>Food Log</h2>
+  <table>
+    <tr><th>Meal</th><th>Quantity</th><th>Food</th><th>Date</th></tr>
     {% for meal in one_cli_food %}
-    <li>{{ meal[0] }} — {{ meal[1] }} ({{ meal[2] }})</li>
+    <tr>
+      <td>{{ meal[0] }}</td>
+      <td>{{ meal[1] }}</td>
+      <td>{{ meal[2] }}</td>
+      <td>{{ meal[3] }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">No meals logged yet.</td></tr>
     {% endfor %}
-</ul>
+  </table>
 
-<h2>Weight Log</h2>
-<ul>
+  <h2>Weight Log</h2>
+  <table>
+    <tr><th>Weight</th><th>Date</th></tr>
     {% for w in one_cli_weight %}
-    <li>{{ w[0] }} on {{ w[1] }}</li>
+    <tr>
+      <td>{{ w[0] }}</td>
+      <td>{{ w[1] }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="2">No weights logged yet.</td></tr>
     {% endfor %}
-</ul>
+  </table>
 
-<a href="/trainer/client/{{ client_id }}/assign">Assign a split</a> 
-
-<a href="/trainer/dashboard">Back to all clients</a>
+  <a href="/trainer/client/{{ client_id }}/assign" class="btn-logout">Assign a split</a>
+  <a href="/trainer/dashboard" class="btn-logout">Back to all clients</a>
 </body>
 </html>

@@ -1,11 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Home</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Home</title>
 </head>
 <body>
-    <h1>Home Page</h1>
-    <a href='/login'>Login</a>
-    <a href='/register'>Register</a>
+  <div class="hero">
+    <h1>Training Tracker</h1>
+    <p class="tagline">Personal Training Client Portal</p>
+    <p class="subtitle">Log your meals, track your bodyweight, and follow the training split built for you.</p>
+
+    <div class="hero-actions">
+      <a href="/login" class="btn-logout">Log In</a>
+      <a href="/register" class="btn-logout">Register</a>
+    </div>
+
+    <ul class="features">
+      <li>Log daily food intake and quantities</li>
+      <li>Track bodyweight over time</li>
+      <li>Follow your assigned workout split</li>
+    </ul>
+  </div>
 </body>
 </html>

@@ -116,8 +116,8 @@ def trainer_view_client(client_id):
     cur = conn.cursor()
     cur.execute("SELECT height, target_weight FROM users WHERE user_id= %s", (client_id,))
     per_rows_users = cur.fetchone()
-    cur.execute("SELECT meal_type, meal_content, log_time FROM food_log WHERE user_id = %s", (client_id,))
-    per_rows_food= cur.fetchall()
+    cur.execute("SELECT meal_type, quantity, meal_content, log_time FROM food_log WHERE user_id = %s", (client_id,))
+    per_rows_food = cur.fetchall()
     cur.execute("SELECT current_weight, log_time FROM weight_log WHERE user_id= %s", (client_id,))
     per_rows_weight=cur.fetchall()
     conn.close()
@@ -150,16 +150,22 @@ def trainer_assign_splits(client_id):
 @role_required('Client')
 def client_dashboard():
         if (request.method=='POST' and request.form['form_type']=="meals"):
+            print("FORM:", dict(request.form))
             mmeal_type = request.form['meal_type']
+            mmeal_quantity = request.form['meal_quantity'] 
             mmeal_content = request.form['meal_content']
+            if mmeal_content=="" or mmeal_quantity=="":
+                return render_template("client_dash.html", error="Please enter your meal content and quantity")
             conn = get_db()
             cur = conn.cursor()
-            cur.execute("INSERT INTO food_log (user_id, meal_type, meal_content, log_time) VALUES (%s,%s,%s,%s)" , (session['user_id'], mmeal_type, mmeal_content, date.today()))
+            cur.execute("INSERT INTO food_log (user_id, meal_type, quantity, meal_content, log_time) VALUES (%s,%s,%s,%s,%s)" , (session['user_id'], mmeal_type, mmeal_quantity, mmeal_content, date.today()))
             conn.commit()
             conn.close()
             return redirect('/client/dashboard')
         elif (request.method=="POST" and request.form['form_type']=="weight"):
             cur_weight=request.form['current_weight']
+            if cur_weight=="":
+                return render_template("client_dash.html", error="Please enter your current weight")
             conn = get_db()
             cur = conn.cursor()
             cur.execute("INSERT INTO weight_log (user_id, current_weight, log_time) VALUES (%s,%s,%s)" , (session['user_id'], cur_weight, date.today()))
@@ -169,13 +175,12 @@ def client_dashboard():
         elif request.method=='GET':
             conn = get_db()
             cur = conn.cursor()
-            cur.execute('SELECT meal_type, meal_content, log_time FROM food_log  WHERE user_id = %s', (session['user_id'],))
+            cur.execute('SELECT meal_type, quantity, meal_content, log_time FROM food_log  WHERE user_id = %s', (session['user_id'],))
             m_rows=cur.fetchall()
             cur.execute('SELECT current_weight, log_time FROM weight_log WHERE user_id = %s', (session['user_id'],))
             w_rows=cur.fetchall()
             cur.execute('SELECT num_of_days, log_time FROM workout WHERE user_id = %s', (session['user_id'],))
             wr_rows=cur.fetchall()
-
             conn.close()
             return render_template("client_dash.html", meals=m_rows, weights=w_rows, workout=wr_rows) 
 

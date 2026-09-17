@@ -1,16 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Trainer Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Trainer Dashboard</title>
 </head>
 <body>
-    <h1>Trainer Dash Page</h1>
-    <h2>List of Clients</h2>
-    <ul>
-        {% for cli in all_cli%}
-        <li><a href="/trainer/client/{{ cli[2] }}">{{ cli[0]}} {{ cli[1]}}</a></li>
-        {% endfor %}
-    </ul>
-    <a href='/logout'>Logout</a>
+  <h1>Trainer Dashboard</h1>
+
+  <h2>List of Clients</h2>
+  <table>
+    <tr><th>Name</th><th></th></tr>
+    {% for cli in all_cli %}
+    <tr>
+      <td>{{ cli[0] }} {{ cli[1] }}</td>
+      <td><a href="/trainer/client/{{ cli[2] }}" class="btn-logout">View</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="2">No clients yet.</td></tr>
+    {% endfor %}
+  </table>
+
+  <a href="/logout" class="btn-logout">Logout</a>
 </body>
 </html>
