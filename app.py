@@ -62,7 +62,6 @@ def login():
     cur = conn.cursor()
     cur.execute("SELECT password, user_id, role from users WHERE email = %s", (eemail,))
     check = cur.fetchone()
-    print("DEBUG check =", check)   # <-- temporary
     conn.close()
     if check is None or not check_password_hash(check[0],ppassword):
         return render_template("login.html", error="Wrong Email or Password")
