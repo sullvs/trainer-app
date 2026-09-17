@@ -2,4 +2,3 @@ trainer/
 __pycache__/
 *.pyc
 .env
-trainer_app.db

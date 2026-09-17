@@ -3,7 +3,7 @@ CREATE TABLE if not exists users (
     first_name text not null, 
     last_name text not null, 
     password text not null, 
-    email text not null, 
+    email text UNIQUE not null, 
     height real, 
     role text not null, 
     birthdate text, 

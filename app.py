@@ -149,7 +149,6 @@ def trainer_assign_splits(client_id):
 @role_required('Client')
 def client_dashboard():
         if (request.method=='POST' and request.form['form_type']=="meals"):
-            print("FORM:", dict(request.form))
             mmeal_type = request.form['meal_type']
             mmeal_quantity = request.form['meal_quantity'] 
             mmeal_content = request.form['meal_content']
